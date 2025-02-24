@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/derekmartins/goexpert-challenge3-clean-architecture/internal/entity"
 )
@@ -26,11 +27,39 @@ func (r *OrderRepository) Save(order *entity.Order) error {
 	return nil
 }
 
-func (r *OrderRepository) GetTotal() (int, error) {
-	var total int
-	err := r.Db.QueryRow("Select count(*) from orders").Scan(&total)
+func (r *OrderRepository) List() ([]entity.Order, error) {
+
+	var orders []entity.Order
+
+	rows, err := r.Db.Query("SELECT * FROM orders")
+
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	return total, nil
+
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(rows)
+
+	for rows.Next() {
+		order := entity.Order{}
+
+		err := rows.Scan(
+			&order.ID,
+			&order.Price,
+			&order.Tax,
+			&order.FinalPrice,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		orders = append(orders, order)
+	}
+
+	return orders, nil
 }
