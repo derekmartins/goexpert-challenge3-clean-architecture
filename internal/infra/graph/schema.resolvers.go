@@ -7,7 +7,6 @@ package graph
 import (
 	"context"
 	"fmt"
-
 	"github.com/derekmartins/goexpert-challenge3-clean-architecture/internal/infra/graph/model"
 	"github.com/derekmartins/goexpert-challenge3-clean-architecture/internal/usecase"
 )
@@ -33,7 +32,28 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input *model.OrderIn
 
 // ListOrders is the resolver for the ListOrders field.
 func (r *queryResolver) ListOrders(ctx context.Context) ([]*model.Order, error) {
-	panic(fmt.Errorf("not implemented: ListOrders - ListOrders"))
+
+	orderOutputListDTO, err := r.ListOrdersOutputUseCase.Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("Order Output: ", orderOutputListDTO)
+
+	var orders []*model.Order
+
+	for _, orderOutputDTO := range orderOutputListDTO {
+		orders = append(orders, &model.Order{
+			ID:         orderOutputDTO.ID,
+			Price:      orderOutputDTO.Price,
+			Tax:        orderOutputDTO.Tax,
+			FinalPrice: orderOutputDTO.FinalPrice,
+		})
+	}
+
+	fmt.Println(orders)
+
+	return orders, nil
 }
 
 // Mutation returns MutationResolver implementation.

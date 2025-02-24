@@ -7,5 +7,6 @@ import "github.com/derekmartins/goexpert-challenge3-clean-architecture/internal/
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	CreateOrderUseCase usecase.CreateOrderUseCase
+	CreateOrderUseCase      usecase.CreateOrderUseCase
+	ListOrdersOutputUseCase usecase.ListOrdersOutputUseCase
 }
